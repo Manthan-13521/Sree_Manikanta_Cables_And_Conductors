@@ -1,73 +1,74 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { fadeInUp } from "@/lib/animations";
 
 interface SectionTitleProps {
   title: string;
   subtitle?: string;
   description?: string;
-  align?: "left" | "center" | "right";
-  variant?: "default" | "light" | "minimal";
   badge?: string;
+  align?: "left" | "center" | "right";
+  variant?: "default" | "light";
   className?: string;
+  as?: "h1" | "h2";
 }
+
+const alignments = {
+  left: "text-left",
+  center: "text-center mx-auto",
+  right: "text-right ml-auto",
+};
+
+const variantStyles = {
+  default: {
+    badge: "bg-accent/10 text-accent",
+    subtitle: "text-text-secondary",
+    title: "text-text-primary",
+    description: "text-text-secondary",
+  },
+  light: {
+    badge: "bg-white/15 text-white",
+    subtitle: "text-text-inverse/70",
+    title: "text-text-inverse",
+    description: "text-text-inverse/70",
+  },
+};
 
 export function SectionTitle({
   title,
   subtitle,
   description,
+  badge,
   align = "center",
   variant = "default",
-  badge,
   className,
+  as: HeadingTag = "h2",
 }: SectionTitleProps) {
-  const alignments = {
-    left: "text-left",
-    center: "text-center",
-    right: "text-right",
-  };
-
-  const variants = {
-    default: {
-      badge: "bg-navy/10 text-navy",
-      title: "text-gray-900 dark:text-white",
-      subtitle: "text-electric",
-      description: "text-gray-600 dark:text-gray-400",
-    },
-    light: {
-      badge: "bg-white/20 text-white",
-      title: "text-white",
-      subtitle: "text-electric-light",
-      description: "text-gray-300",
-    },
-    minimal: {
-      badge: "bg-navy/5 text-navy",
-      title: "text-gray-900 dark:text-white",
-      subtitle: "text-navy",
-      description: "text-gray-500 dark:text-gray-400",
-    },
-  };
-
-  const currentVariant = variants[variant];
+  const styles = variantStyles[variant];
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6 }}
-      className={cn("max-w-3xl mx-auto mb-12 lg:mb-16", alignments[align], className)}
+      variants={fadeInUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-80px" }}
+      className={cn(
+        "max-w-3xl mb-12 lg:mb-16",
+        alignments[align],
+        className
+      )}
     >
       {badge && (
         <motion.span
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 8 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.4, delay: 0.1 }}
+          transition={{ delay: 0.1 }}
           className={cn(
-            "inline-block rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide uppercase mb-4",
-            currentVariant.badge
+            "inline-block rounded-full px-3 py-1 text-caption font-medium uppercase tracking-wider mb-4",
+            styles.badge
           )}
         >
           {badge}
@@ -75,40 +76,43 @@ export function SectionTitle({
       )}
       {subtitle && (
         <motion.p
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 8 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.4, delay: 0.2 }}
+          transition={{ delay: 0.15 }}
           className={cn(
-            "text-sm font-semibold tracking-widest uppercase mb-3",
-            currentVariant.subtitle
+            "text-small uppercase tracking-widest mb-3",
+            styles.subtitle
           )}
         >
           {subtitle}
         </motion.p>
       )}
-      <motion.h2
-        initial={{ opacity: 0, y: 10 }}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.4, delay: 0.3 }}
-        className={cn(
-          "text-3xl sm:text-4xl lg:text-5xl font-bold font-heading leading-tight",
-          currentVariant.title
-        )}
+        transition={{ delay: 0.2 }}
       >
-        {title}
-      </motion.h2>
+        <HeadingTag
+          className={cn(
+            "text-h2 lg:text-h3 font-heading",
+            styles.title
+          )}
+        >
+          {title}
+        </HeadingTag>
+      </motion.div>
       {description && (
         <motion.p
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 8 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.4, delay: 0.4 }}
+          transition={{ delay: 0.25 }}
           className={cn(
-            "mt-4 text-base sm:text-lg leading-relaxed max-w-2xl",
+            "mt-4 text-body-lg max-w-2xl",
             align === "center" && "mx-auto",
-            currentVariant.description
+            styles.description
           )}
         >
           {description}

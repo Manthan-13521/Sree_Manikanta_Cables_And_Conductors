@@ -1,5 +1,4 @@
 "use client";
-
 import { Hero } from "@/components/home/hero";
 import { IntroSection } from "@/components/home/intro-section";
 import { WhyChooseUs } from "@/components/home/why-choose-us";

@@ -3,38 +3,33 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { buttonHover } from "@/lib/animations";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
   {
     variants: {
       variant: {
-        default: "bg-navy text-white hover:bg-navy-light shadow-soft hover:shadow-soft-lg",
-        destructive: "bg-electric text-white hover:bg-electric-light shadow-soft hover:shadow-glow",
-        outline: "border-2 border-navy bg-transparent hover:bg-navy/5 text-navy",
-        secondary: "bg-lightgray text-navy hover:bg-gray-200",
-        ghost: "bg-transparent hover:bg-navy/5 text-navy",
-        link: "text-navy underline-offset-4 hover:underline text-sm",
-        glass: "bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20",
-        "glass-dark": "bg-navy/50 backdrop-blur-md border border-navy/50 text-white hover:bg-navy/70",
+        primary: "bg-primary text-white hover:bg-primary-light shadow-sm",
+        secondary: "bg-surface-secondary text-text-primary hover:bg-surface-tertiary border border-border",
+        outline: "border-2 border-primary text-primary hover:bg-primary/5",
+        ghost: "text-text-secondary hover:bg-surface-hover",
+        danger: "bg-accent text-white hover:bg-accent-light shadow-sm",
+        link: "text-primary underline-offset-4 hover:underline p-0 h-auto",
       },
       size: {
-        default: "h-11 px-6 py-2",
-        sm: "h-9 px-4 rounded-lg text-xs",
-        lg: "h-12 px-8 rounded-xl text-base",
-        xl: "h-14 px-10 rounded-2xl text-lg",
-        icon: "h-11 w-11",
-        "icon-sm": "h-9 w-9",
-        "icon-lg": "h-12 w-12",
-      },
-      fullWidth: {
-        true: "w-full",
+        sm: "h-9 px-4 text-small",
+        md: "h-10 px-5 text-body",
+        lg: "h-12 px-6 text-body",
+        xl: "h-14 px-8 text-title",
+        icon: "w-10 h-10",
       },
     },
     defaultVariants: {
-      variant: "default",
-      size: "default",
+      variant: "primary",
+      size: "md",
     },
   }
 );
@@ -52,28 +47,22 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       className,
-      variant,
-      size,
-      fullWidth,
+      variant = "primary",
+      size = "md",
       asChild = false,
       loading = false,
       icon,
       iconPosition = "left",
-      disabled,
       children,
       ...props
     },
     ref
   ) => {
-    const Comp = asChild ? Slot : "button";
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, fullWidth, className }))}
-        ref={ref}
-        disabled={disabled || loading}
-        aria-busy={loading}
-        {...props}
-      >
+    const baseClasses = cn(buttonVariants({ variant, size, className }));
+    const isDisabled = props.disabled || loading;
+
+    const content = (
+      <>
         {loading && (
           <svg
             className="animate-spin h-4 w-4"
@@ -82,14 +71,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             viewBox="0 0 24 24"
             aria-hidden="true"
           >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="3"
-            />
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
             <path
               className="opacity-75"
               fill="currentColor"
@@ -104,7 +86,43 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {icon && iconPosition === "right" && !loading && (
           <span className="flex-shrink-0" aria-hidden="true">{icon}</span>
         )}
-      </Comp>
+      </>
+    );
+
+    if (asChild) {
+      return (
+        <Slot
+          ref={ref}
+          className={baseClasses}
+          aria-busy={loading}
+          {...(props as React.ComponentPropsWithoutRef<typeof Slot> & { disabled?: boolean })}
+        >
+          {content}
+        </Slot>
+      );
+    }
+
+    const isAnimated = variant === "primary";
+
+    if (isAnimated) {
+      return (
+        <motion.button
+          ref={ref}
+          className={baseClasses}
+          disabled={isDisabled}
+          aria-busy={loading}
+          {...buttonHover}
+          {...(props as React.ComponentPropsWithoutRef<typeof motion.button>)}
+        >
+          {content}
+        </motion.button>
+      );
+    }
+
+    return (
+      <button ref={ref} className={baseClasses} disabled={isDisabled} aria-busy={loading} {...props}>
+        {content}
+      </button>
     );
   }
 );

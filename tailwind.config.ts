@@ -1,7 +1,6 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: ["class"],
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -25,10 +24,6 @@ const config: Config = {
           DEFAULT: "#0F172A",
           lighter: "#1E293B",
         },
-      },
-      fontFamily: {
-        poppins: ["var(--font-poppins)", "sans-serif"],
-        inter: ["var(--font-inter)", "sans-serif"],
       },
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],

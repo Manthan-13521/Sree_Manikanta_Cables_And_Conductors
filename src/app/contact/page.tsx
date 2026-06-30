@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, Clock, Send, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { SectionTitle } from "@/components/ui/section-title";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { TypewriterText, QuickMessages } from "@/components/ui/typewriter";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { COMPANY_INFO, WORKING_HOURS } from "@/lib/constants";
 
@@ -18,10 +19,23 @@ export default function ContactPage() {
     subject: "",
     message: "",
   });
+  const [typingMessage, setTypingMessage] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (isTyping) return;
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+
+  const handleQuickMessage = useCallback((msg: string) => {
+    setTypingMessage(msg);
+    setIsTyping(true);
+  }, []);
+
+  const handleTypeComplete = useCallback(() => {
+    setFormData((prev) => ({ ...prev, message: typingMessage }));
+    setIsTyping(false);
+  }, [typingMessage]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,15 +83,25 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <label className="block text-small font-medium text-primary mb-1.5">Message</label>
-                    <textarea
-                      name="message"
-                      value={formData.message}
-                      onChange={handleChange}
-                      rows={5}
-                      className="w-full px-4 py-3 rounded-lg border border-border bg-white text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all"
-                      placeholder="Write your message here..."
-                      required
-                    />
+                    <div className="relative">
+                      <textarea
+                        name="message"
+                        value={formData.message}
+                        onChange={handleChange}
+                        rows={5}
+                        className="w-full px-4 py-3 rounded-lg border border-border bg-white text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all"
+                        placeholder={isTyping ? "" : "Write your message here..."}
+                        required
+                      />
+                      {isTyping && (
+                        <div className="absolute inset-0 px-4 py-3 text-text-primary pointer-events-none">
+                          <TypewriterText text={typingMessage} speed={25} onComplete={handleTypeComplete} />
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-3">
+                      <QuickMessages onSelect={handleQuickMessage} />
+                    </div>
                   </div>
                   <Button type="submit" variant="danger" size="lg" className="w-full sm:w-auto">
                     <Send className="w-4 h-4 mr-2" />

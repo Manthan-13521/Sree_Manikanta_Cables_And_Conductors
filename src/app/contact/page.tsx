@@ -39,8 +39,11 @@ export default function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const greeting = formData.name
+      ? `Hi, I am ${formData.name}.`
+      : "Hi Sree Manikanta Cables!";
     const whatsappUrl = `https://wa.me/${"919121224544"}?text=${encodeURIComponent(
-      `Name: ${formData.name}%0AEmail: ${formData.email}%0APhone: ${formData.phone}%0ASubject: ${formData.subject}%0AMessage: ${formData.message}`
+      `${greeting}%0A%0A${formData.subject ? `Subject: ${formData.subject}%0A` : ""}%0A${formData.message}%0A%0A---%0A${formData.name ? `Name: ${formData.name}%0A` : ""}${formData.email ? `Email: ${formData.email}%0A` : ""}${formData.phone ? `Phone: ${formData.phone}` : ""}`
     )}`;
     window.open(whatsappUrl, "_blank");
   };
@@ -141,7 +144,9 @@ export default function ContactPage() {
                       <p className="text-small text-text-secondary">Quick responses during business hours</p>
                     </div>
                     <a
-                      href={`https://wa.me/${"919121224544"}`}
+                      href={`https://wa.me/${"919121224544"}?text=${encodeURIComponent(
+                        "Hi Sree Manikanta Cables! I visited your website and would like to discuss my cable requirements."
+                      )}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
